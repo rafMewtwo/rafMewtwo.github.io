@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+  <title>Pyscript Todolist</title>
+</head>
+<body>
+  
+  <py-script>
+    from js import console
+    from datetime import datetime
+    tasks = []
+
+    def atualiza_lista():
+      taskCriadas = Element('tasks-criadas')
+      taskCriadas.element.innerText = ""
+      for i in tasks:
+        taskCriadas.element.innerText += f"{i['content']}\n"
+
+    def cria_task(*ags, **kags):
+      inputTask = Element('input-task')
+      task = inputTask.element.value
+
+      y = list(filter(lambda x: x['content'] == task, tasks))
+      message = Element('message')
+      if len(y) > 0:
+        message.element.style.display = 'block'
+        return None
+      else:
+        message.element.style.display = 'none'
+      
+      dict_task = {
+        'task-id': len(task),
+        'content': task,
+        'data': datetime.now(),
+        'status': 'C',
+      }
+
+      tasks.append(dict_task)
+      inputTask.element.value = ""
+      atualiza_lista()
+
+    def add_task_event(e):
+      if(e.key == "Enter"):
+        cria_task()
+    
+    inputTaskEvent = Element('input-task')
+    inputTaskEvent.element.onkeypress = add_task_event
+
+  </py-script>
+
+  <main>
+    <div class="container">
+      <br>
+      <div id="message" style="display: none" class="alert alert-danger" role="alert">
+        Está tarefa já foi adicionada
+      </div>
+      <h3>Lista de tarefas</h3>
+      <input id="input-task" type="text" placeholder="Digite uma tarefa" class="form-control" />
+      <br>
+      <button id="btn-task" type="submit" class="btn btn-success" pys-onClick="cria_task">Enviar</button>
+      <hr>
+      <div class="row">
+        <div class="col-md">
+          <h3 style="color: orange">Criadas</h3>
+          <div id="tasks-criadas">
+
+          </div>
+        </div>
+        <div class="col-md">
+          <h3 style="color: green">Feitas</h3>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
